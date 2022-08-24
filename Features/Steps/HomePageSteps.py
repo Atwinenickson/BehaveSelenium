@@ -10,12 +10,12 @@ from Utilities.readproperty import ReadConfig
 import time
 
 baseURL = ReadConfig.getUrl()
-mylogger = LogGen.loggen()
+mylogger = LogGen.logger()
 
 
 @given('Launch the browser')
 def step_impl(context):
-    context.driver = webdriver.chrome(ChromeDriverManager.install())
+    context.driver = webdriver.Chrome(ChromeDriverManager.install())
     mylogger.info("*******DRIVER INITIALIZED******")
     context.driver.get(baseURL)
     mylogger.info("********BROWSER LAUNCHED*******")

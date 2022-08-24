@@ -11,12 +11,12 @@ import time
 
 
 baseURL = ReadConfig.getUrl()
-mylogger = LogGen.loggen()
+mylogger = LogGen.logger()
 
 
 @given('Launch the App')
 def step_impl(context):
-    context.driver = webdriver.chrome(ChromeDriverManager.install())
+    context.driver = webdriver.Chrome(ChromeDriverManager.install())
     mylogger.info("*******DRIVER INITIALIZED******")
     context.driver.get(baseURL)
     mylogger.info("********BROWSER LAUNCHED*******")
@@ -24,19 +24,43 @@ def step_impl(context):
 
 @when('enter login credentials')
 def step_impl(context):
-    
+    mylogger.info("*****Passing Credentials******")
+    global hpage
+    global lpage
+
+    hpage = HomePage(context.driver)
+    hpage.clickOnLogin()
+    lpage = LoginPage(context.driver)
+    usr = ReadConfig.getUserName()
+    pwd = ReadConfig.getPassword()
+    time.sleep(5)
+    lpage.setusername(usr)
+    lpage.setpassword(pwd)
+    mylogger.info("******Entered Credentials*******")
 
 
 @then('click login')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then click login')
+    lpage.clickOnLogin()
+    mylogger.info("****Clicked Login Button")
 
 
 @then('verify the page title and screenshot')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then verify the page title and screenshot')
+    actual_title = context.driver.title
+    expected_tile = "Login - Change 2 Automation"
+    if actual_title == expected_tile:
+        assert True
+        context.driver.save_screenshot("Screenshots"+"Loginpage.png")
+        allure.attach(context.driver.get_screenshot_as_png(), name="c2ta Login test", attachment_type=AttachmentType.PNG)
+        mylogger.info("****Title matched******")
+    else:
+        mylogger.info("******Title not matched******")
+        assert False
+        time.sleep(5)
 
 
 @then('close the App')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then close the App')
+    context.driver.close()
+    mylogger.info("***Browser closed********")
